@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("📰 Cargando lista de artículos...");
 
     try {
-      const res = await fetch("http://18.222.79.144:8000/blogs/");
+      const res = await fetch("https://18.222.79.144/blogs/");
       console.log("➡️ Respuesta artículos:", res.status);
 
       if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       console.log("✅ Artículos renderizados en el DOM");
 
-      const resPopular = await fetch("http://18.222.79.144:8000/blogs/popular/");
+      const resPopular = await fetch("https://18.222.79.144/blogs/popular/");
       console.log("➡️ Respuesta populares:", resPopular.status);
 
       if (!resPopular.ok) throw new Error(`Error HTTP ${resPopular.status}`);
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const sidebarList = document.querySelector(".list-featured");
 
   try {
-    const res = await fetch("http://18.222.79.144:8000/blogs/");
+    const res = await fetch("https://18.222.79.144/blogs/");
     if (!res.ok) throw new Error("Error al obtener blogs");
     const blogs = await res.json();
 

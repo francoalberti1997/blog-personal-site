@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const modelId = 1;
 
   try {
-    const res = await fetch(`http://18.222.79.144:8000/modelos/${modelId}/`);
+    const res = await fetch(`https://18.222.79.144/modelos/${modelId}/`);
     if (!res.ok) throw new Error("Error al obtener los datos del modelo");
     const model = await res.json();
 
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const timeoutId = setTimeout(() => controller.abort(), 3600000); // 1 hora = 3600000 ms
 
     try {
-      const res = await fetch(`http://18.222.79.144:8000/models/${modelId}/predict/`, {
+      const res = await fetch(`https://18.222.79.144/models/${modelId}/predict/`, {
         method: "POST",
         body: formData,
         signal: controller.signal
