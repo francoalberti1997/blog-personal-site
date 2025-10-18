@@ -12,6 +12,12 @@
 *::after {
   box-sizing: border-box; }
 
+
+.title-model{
+  display: flex;
+  justify-content: center;
+}
+
 html {
   font-family: sans-serif;
   line-height: 1.15;

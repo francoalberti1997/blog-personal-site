@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modelo de IA - Alberti</title>
+  <link rel="icon" href="./assets/img/favicon.ico" type="image/x-icon">
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .model-header {
+      margin-top: 100px; /* espacio por navbar fijo */
+      text-align: center;
+    }
+    .model-header h1 {
+      font-weight: 700;
+      font-size: 2.5rem;
+    }
+    .model-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+    .preview {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      border-radius: 10px;
+      margin-top: 1rem;
+    }
+    .nav-item.highlight a {
+      transition: color 0.3s ease, transform 0.2s ease;
+    }
+    .nav-item.highlight a:hover {
+      color: #0a66c2;
+      transform: translateY(-2px);
+    }
+    a p {
+      margin: 5px;
+      font-size: 14px;
+    }
+    
+
+    </style>
+    
+</head>
+<body>
+
+<!-- ========================
+      NAVBAR
+======================== -->
+<nav class="topnav navbar navbar-expand-lg navbar-light bg-white fixed-top">
+  <div class="modelo-nav container">
+    <a class="navbar-brand d-flex align-items-center" href="./index.html">
+      <strong>Alberti 
+        <img src="assets/img/demo/mundo.png" alt="Logo" style="width:18px; height:18px; margin-left:6px; vertical-align:middle;">
+      </strong>
+    </a>
+    <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse" id="navbarColor02">
+      <ul class="navbar-nav mr-auto d-flex align-items-center mb-1">
+        <li class="nav-item"><a class="nav-link" href="./index.html">Intro</a></li>
+        <li class="nav-item"><a class="nav-link" href="./modelos.html">Proyectos</a></li>
+        <li class="nav-item"><a class="nav-link" href="./index.html">Blogs</a></li>
+      </ul>
+    </div>
+      <ul class="navbar-nav d-flex flex-row justify-content-center">
+        <li class="nav-item highlight mx-2">
+          <a class="nav-link d-flex align-items-center" href="https://www.linkedin.com/in/franco-alberti-3248b7224/" target="_blank">
+            <i class="fab fa-linkedin fa-lg me-2"></i><p>LinkedIn</p>
+          </a>
+        </li>
+        <li class="nav-item highlight mx-2">
+          <a class="nav-link d-flex align-items-center" href="mailto:albertifranco97@gmail.com">
+            <i class="fas fa-envelope fa-lg me-2"></i><p>Gmail</p>
+          </a>
+        </li>
+        <li class="nav-item highlight mx-2">
+          <a class="nav-link d-flex align-items-center" href="https://github.com/francoalberti1997" target="_blank">
+            <i class="fab fa-github fa-lg me-2"></i><p>GitHub</p>
+          </a>
+        </li>
+      </ul>
+  </div>
+</nav>
+
+<!-- ========================
+      CONTENIDO
+======================== -->
+<div class="container model-header">
+  <h1 id="model-title">IA Model</h1>
+  <p id="model-description" class="text-muted mt-2"></p>
+</div>
+
+<div class="container model-card">
+  <h5 class="mb-3">Instrucciones</h5>
+  <p id="model-instructions" class="text-secondary"></p>
+
+  <hr>
+
+  <form id="image-form" class="mt-4 text-center">
+    <label for="image-input" class="form-label fw-bold">Seleccioná una imagen</label>
+    <input type="file" id="image-input" accept="image/*" class="form-control mb-3">
+    <button type="submit" class="btn btn-primary mt-2">Procesar imagen</button>
+  </form>
+
+  <div class="mt-5 text-center">
+    <h6>Imagen de entrada:</h6>
+    <img id="input-preview" class="preview" style="display:none;">
+
+    <h6 class="mt-4">Resultado del modelo:</h6>
+    <img id="output-image" class="preview" style="display:none;">
+  </div>
+</div>
+
+<!-- ========================
+      FOOTER
+======================== -->
+<div class="container mt-5">
+  <footer class="bg-white border-top p-3 text-muted small">
+    <div class="row align-items-center justify-content-between">
+      <div>
+        <span class="navbar-brand mr-2"><strong>Alberti 
+          <img src="assets/img/demo/mundo.png" alt="Logo" style="width:18px; height:18px; margin-left:6px; vertical-align:middle;">
+        </strong></span>
+        Copyright &copy;<script>document.write(new Date().getFullYear())</script>. All rights reserved.
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ========================
+      SCRIPTS
+======================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const params = new URLSearchParams(window.location.search);
+  const modelId = params.get("id");
+
+  const title = document.getElementById("model-title");
+  const description = document.getElementById("model-description");
+  const instructions = document.getElementById("model-instructions");
+
+  const input = document.getElementById("image-input");
+  const inputPreview = document.getElementById("input-preview");
+  const outputImage = document.getElementById("output-image");
+
+  // --- 1. Cargar información del modelo desde el backend ---
+  try {
+    const res = await fetch(`http://18.222.79.144:8000/modelos/predict/${modelId}/`, { method: "GET" });
+    if (!res.ok) throw new Error("Error al obtener datos del modelo");
+    const data = await res.json();
+
+    title.textContent = data.name || "Modelo de IA";
+    description.textContent = data.description || "";
+    instructions.textContent = data.instructions || "Sin instrucciones específicas.";
+  } catch (err) {
+    console.error(err);
+    title.textContent = "Error al cargar el modelo";
+  }
+
+  // --- 2. Previsualización de la imagen ---
+  input.addEventListener("change", () => {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      inputPreview.src = e.target.result;
+      inputPreview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // --- 3. Envío de imagen al modelo (POST) ---
+  document.getElementById("image-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const file = input.files[0];
+    if (!file) { alert("Por favor seleccioná una imagen."); return; }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const res = await fetch(`http://18.222.79.144:8000/modelos/predict/${modelId}/`, {
+        method: "POST",
+        body: formData
+      });
+      if (!res.ok) throw new Error("Error procesando la imagen");
+
+      const data = await res.json();
+      if (data.output_image_url) {
+        outputImage.src = data.output_image_url;
+        outputImage.style.display = "block";
+      } else {
+        alert("No se recibió una imagen de salida desde el modelo.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Ocurrió un error procesando la imagen.");
+    }
+  });
+});
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const params = new URLSearchParams(window.location.search);
+  const modelId = params.get("id");
+
+  const input = document.getElementById("image-input");
+  const inputPreview = document.getElementById("input-preview");
+  const outputImage = document.getElementById("output-image");
+
+  input.addEventListener("change", () => {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => { inputPreview.src = e.target.result; inputPreview.style.display="block"; };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById("image-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const file = input.files[0];
+    if (!file) { alert("Por favor seleccioná una imagen."); return; }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const res = await fetch(`http://18.222.79.144:8000/modelos/predict/${modelId}/`, { method: "POST", body: formData });
+      if (!res.ok) throw new Error("Error procesando la imagen");
+      const data = await res.json();
+      if (data.output_image_url) { outputImage.src = data.output_image_url; outputImage.style.display="block"; }
+      else alert("No se recibió una imagen de salida desde el modelo.");
+    } catch(err) { console.error(err); alert("Ocurrió un error procesando la imagen."); }
+  });
+});
+</script>
+
+</body>
+</html>
