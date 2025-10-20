@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const file = input.files[0];
     if (!file) {
-      alert("Por favor seleccioná una imagen xx.");
+      alert("Por favor seleccioná una imagen.");
       return;
     }
 
