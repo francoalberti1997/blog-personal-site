@@ -125,7 +125,10 @@
     <img id="input-preview" class="preview" style="display:none;">
 
     <h6 class="mt-4">Resultado del modelo:</h6>
-    <img id="output-image" class="preview" style="display:none;">
+<img id="output-image" class="preview" style="display:none;">
+<p id="output-url" class="mt-2 text-secondary small" style="display:none;"></p>
+
+    
   </div>
 </div>
 
@@ -152,32 +155,33 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
+  // 🔹 Obtener ID del modelo desde la URL (?id=1)
   const params = new URLSearchParams(window.location.search);
   const modelId = params.get("id");
 
-  const title = document.getElementById("model-title");
-  const description = document.getElementById("model-description");
-  const instructions = document.getElementById("model-instructions");
+  const API_BASE = "https://18.222.79.144";
 
+  // --- 1. Cargar datos del modelo ---
+  try {
+    const res = await fetch(`${API_BASE}/modelos/${modelId}/`);
+    if (!res.ok) throw new Error("Error al obtener los datos del modelo");
+    const model = await res.json();
+
+    document.getElementById("model-title").textContent = model.title;
+    document.getElementById("model-description").textContent = model.description || "";
+    document.getElementById("model-instructions").textContent = model.instructions || "Sin instrucciones.";
+  } catch (err) {
+    console.error("⚠️ Error cargando modelo:", err);
+    document.getElementById("model-title").textContent = "Error al cargar el modelo.";
+  }
+
+  // --- 2. Referencias ---
+  const form = document.getElementById("image-form");
   const input = document.getElementById("image-input");
   const inputPreview = document.getElementById("input-preview");
   const outputImage = document.getElementById("output-image");
 
-  // --- 1. Cargar información del modelo desde el backend ---
-  try {
-    const res = await fetch(`https://18.222.79.144/modelos/predict/${modelId}/`, { method: "GET" });
-    if (!res.ok) throw new Error("Error al obtener datos del modelo");
-    const data = await res.json();
-
-    title.textContent = data.name || "Modelo de IA";
-    description.textContent = data.description || "";
-    instructions.textContent = data.instructions || "Sin instrucciones específicas.";
-  } catch (err) {
-    console.error(err);
-    title.textContent = "Error al cargar el modelo";
-  }
-
-  // --- 2. Previsualización de la imagen ---
+  // --- 3. Previsualización ---
   input.addEventListener("change", () => {
     const file = input.files[0];
     if (!file) return;
@@ -189,73 +193,82 @@ document.addEventListener("DOMContentLoaded", async () => {
     reader.readAsDataURL(file);
   });
 
-  // --- 3. Envío de imagen al modelo (POST) ---
-  document.getElementById("image-form").addEventListener("submit", async e => {
+  // --- 4. Envío del formulario ---
+  form.addEventListener("submit", async e => {
     e.preventDefault();
     const file = input.files[0];
-    if (!file) { alert("Por favor seleccioná una imagen."); return; }
+    if (!file) return alert("Seleccioná una imagen primero.");
 
     const formData = new FormData();
     formData.append("image", file);
 
+    const button = form.querySelector("button");
+    button.disabled = true;
+    button.textContent = "Procesando...";
+    outputImage.style.display = "none";
+
     try {
-      const res = await fetch(`https://18.222.79.144/modelos/predict/${modelId}/`, {
+      // Paso 1: enviar imagen al modelo
+      const res = await fetch(`${API_BASE}/modelos/predict/${modelId}/`, {
         method: "POST",
         body: formData
       });
-      if (!res.ok) throw new Error("Error procesando la imagen");
+      if (!res.ok) throw new Error("Error enviando la imagen");
 
       const data = await res.json();
-      if (data.output_image_url) {
-        outputImage.src = data.output_image_url;
-        outputImage.style.display = "block";
-      } else {
-        alert("No se recibió una imagen de salida desde el modelo.");
+      const prediccionId = data.prediccion_id;
+      if (!prediccionId) throw new Error("El servidor no devolvió un ID de predicción");
+
+      // Paso 2: hacer polling hasta que termine la tarea
+      let completado = false;
+      let intentos = 0;
+      const pollInterval = 3000; // 3 segundos
+      const maxIntentos = 1200; // 1 hora (1200 × 3s)
+
+      while (!completado && intentos < maxIntentos) {
+        const statusRes = await fetch(`${API_BASE}/modelos/predicciones/${prediccionId}/`);
+        if (!statusRes.ok) throw new Error("Error consultando el estado");
+
+        const statusData = await statusRes.json();
+
+        console.log("Estado de la predicción:", statusData);
+
+        if (statusData.status === "done" && statusData.output_image) {
+          outputImage.src = statusData.output_image;
+          outputImage.style.display = "block";
+          completado = true;
+          button.textContent = "Procesar imagen";
+          button.disabled = false;
+          break;
+        }
+
+        if (statusData.status === "error") {
+          alert("❌ Ocurrió un error procesando la imagen.");
+          button.textContent = "Procesar imagen";
+          button.disabled = false;
+          return; 
+        }
+
+        await new Promise(r => setTimeout(r, pollInterval));
+        intentos++;
       }
+
+      if (!completado) {
+        alert("⚠️ Tiempo de espera agotado (1 hora).");
+        button.textContent = "Procesar imagen";
+        button.disabled = false;
+      }
+
     } catch (err) {
-      console.error(err);
-      alert("Ocurrió un error procesando la imagen.");
+      console.error("⚠️ Error general:", err);
+      alert("Error procesando la imagen.");
+      button.disabled = false;
+      button.textContent = "Procesar imagen";
     }
   });
 });
 </script>
 
-
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-  const params = new URLSearchParams(window.location.search);
-  const modelId = params.get("id");
-
-  const input = document.getElementById("image-input");
-  const inputPreview = document.getElementById("input-preview");
-  const outputImage = document.getElementById("output-image");
-
-  input.addEventListener("change", () => {
-    const file = input.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => { inputPreview.src = e.target.result; inputPreview.style.display="block"; };
-    reader.readAsDataURL(file);
-  });
-
-  document.getElementById("image-form").addEventListener("submit", async e => {
-    e.preventDefault();
-    const file = input.files[0];
-    if (!file) { alert("Por favor seleccioná una imagen."); return; }
-
-    const formData = new FormData();
-    formData.append("image", file);
-
-    try {
-      const res = await fetch(`https://18.222.79.144/modelos/predict/${modelId}/`, { method: "POST", body: formData });
-      if (!res.ok) throw new Error("Error procesando la imagen");
-      const data = await res.json();
-      if (data.output_image_url) { outputImage.src = data.output_image_url; outputImage.style.display="block"; }
-      else alert("No se recibió una imagen de salida desde el modelo.");
-    } catch(err) { console.error(err); alert("Ocurrió un error procesando la imagen."); }
-  });
-});
-</script>
 
 </body>
 </html>
