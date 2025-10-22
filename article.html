@@ -30,7 +30,7 @@
 			<a class="nav-link" href="./index.html">Intro <span class="sr-only">(current)</span></a>
 			</li>
 			<li class="nav-item">
-			<a class="nav-link" href="./modelos.html">Proyectos</a>
+			<a class="nav-link" href="./modelos.html">Projects</a>
 			</li>			
 			<li class="nav-item">
 			<a class="nav-link" href="./blogs.html">Blogs</a>
@@ -84,8 +84,8 @@ a p{
 <div class="container" id="article-header"></div>
 
 <!-- MAIN -->
-<div class="container pt-4 pb-4">
-  <div class="row justify-content-center">
+<div class="container pt-2 pb-2">
+  <!-- <div class="row justify-content-center">
     <div class="col-lg-2 pr-4 mb-4 col-md-12">
       <div class="sticky-top text-center">
         <div class="text-muted">Compartir</div>
@@ -98,12 +98,12 @@ a p{
           <script async src="https://static.addtoany.com/menu/page.js"></script>
         </div>
       </div>
-    </div>
+    </div> -->
 
-    <div class="col-md-12 col-lg-8">
+     <div class="col-md-12 col-lg-8 mx-auto my-4">
       <article class="article-post" id="article-content"></article>
 
-      <div class="border p-5 bg-lightblue mt-5">
+      <!-- <div class="border p-5 bg-lightblue mt-5">
         <div class="row justify-content-between">
           <div class="col-md-5 mb-2 mb-md-0">
             <h5 class="font-weight-bold secondfont">Suscribite</h5>
@@ -120,7 +120,7 @@ a p{
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </div>
@@ -187,12 +187,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="jumbotron jumbotron-fluid mb-3 pl-0 pt-0 pb-0 bg-white position-relative">
         <div class="h-100 tofront">
           <div class="row justify-content-between">
-            <div class="col-md-6 pt-6 pb-6 pr-6 align-self-center">
+            <div class="col-md-6 py-3 pr-4 align-self-center">
               <p class="text-uppercase font-weight-bold">
                 <a class="text-danger" href="#">${article.category || "General"}</a>
               </p>
               <h1 class="display-4 secondfont mb-3 font-weight-bold">${article.title}</h1>
-              <p class="mb-3">${article.description || ""}</p>
+              <p class="mb-5">${article.description || ""}</p>
               <div class="d-flex align-items-center">
                 <img class="rounded-circle" src=${article.author_image} width="70">
                 <small class="ml-2">

@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const container = document.querySelector(".row");
 
   try {
-    const res = await fetch("https://18.222.79.144/modelos/");
+    const res = await fetch("http://18.222.79.144:8000/modelos/");
     if (!res.ok) throw new Error("Error al obtener los modelos");
 
     const modelos = await res.json();
@@ -30,9 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               </h2>
               <p class="card-text">${modelo.description || "Sin descripción disponible."}</p>
               <div>
-                <small class="d-block">
-                  <a class="text-muted" href="./author.html">${modelo.author || "Autor desconocido"}</a>
-                </small>
+               
                 <small class="text-muted">${modelo.date} · ${modelo.category || "Sin categoría"}</small>
               </div>
             </div>

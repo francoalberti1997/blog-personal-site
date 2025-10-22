@@ -83,9 +83,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const blogs = await res.json();
 
     // Limpia el contenido previo
-    blogContainer.innerHTML = `
-      <h5 class="font-weight-bold spanborder"><span>Últimos Blogs</span></h5>
-    `;
+    // blogContainer.innerHTML = `
+    //   <h5 class="font-weight-bold spanborder"><span>Últimos Blogs</span></h5>
+    // `;
 
     // Render principal
     blogs.forEach(blog => {
