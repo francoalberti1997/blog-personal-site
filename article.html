@@ -151,10 +151,11 @@ a p{
 <script src="./assets/js/functions.js"></script>
 
 <!-- SCRIPT EXTERNO -->
-<script src="/article.js"></script>
+<script type="module" src="/article.js"></script>
 
 <!-- SCRIPT EXTERNO -->
 <script>
+
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DOM cargado en article.html");
 
@@ -167,7 +168,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const url = `https://18.222.79.144/blogs/${blogId}/`;
+  const url = `https://crucially-treacherous-madie.ngrok-free.dev/blogs/${blogId}/`;
   console.log("🌐 Solicitando:", url);
 
   try {

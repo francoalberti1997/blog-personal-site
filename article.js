@@ -1,3 +1,5 @@
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DOM cargado");
 
@@ -13,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("📰 Cargando lista de artículos...");
 
     try {
-      const res = await fetch("https://18.222.79.144/blogs/");
+      const res = await fetch(`https://crucially-treacherous-madie.ngrok-free.dev/blogs/`);
       console.log("➡️ Respuesta artículos:", res.status);
 
       if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
