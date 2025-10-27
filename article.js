@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       console.log("✅ Artículos renderizados en el DOM");
 
-      const resPopular = await fetch("https://18.222.79.144/blogs/popular/");
+      const resPopular = await fetch("https://crucially-treacherous-madie.ngrok-free.dev/blogs/popular/");
       console.log("➡️ Respuesta populares:", resPopular.status);
 
       if (!resPopular.ok) throw new Error(`Error HTTP ${resPopular.status}`);
@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const sidebarList = document.querySelector(".list-featured");
 
   try {
-    const res = await fetch("https://18.222.79.144/blogs/");
+    const res = await fetch("https://crucially-treacherous-madie.ngrok-free.dev/blogs/");
     if (!res.ok) throw new Error("Error al obtener blogs");
     const blogs = await res.json();
 

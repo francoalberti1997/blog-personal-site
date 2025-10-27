@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const container = document.querySelector(".row");
 
   try {
-    const res = await fetch("https://18.222.79.144/modelos/");
+    const res = await fetch("https://crucially-treacherous-madie.ngrok-free.dev/modelos/");
     if (!res.ok) throw new Error("Error al obtener los modelos");
 
     const modelos = await res.json();
