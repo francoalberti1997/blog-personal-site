@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ================================
     if (!blogId && articlesContainer) {
       console.log("📰 Cargando lista de artículos...");
-
+      console.log(`🌐 Usando BASE_URL: ${BASE_URL}/blogs/`);
       const res = await fetch(`${BASE_URL}/blogs/`);
       if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
       const articles = await res.json();
