@@ -1,2 +1,2 @@
-const SERVER_URL = "https://crucially-treacherous-madie.ngrok-free.dev";
+const SERVER_URL = "https://18.222.79.144/";
 export default SERVER_URL;

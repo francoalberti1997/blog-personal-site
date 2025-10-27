@@ -1,10 +1,20 @@
-console.log("https://crucially-treacherous-madie.ngrok-free.dev/");
+(async () => {
+  const url = "https://18.222.79.144/ping/";
+  console.log("🌐 Haciendo ping a:", url);
 
-// Petición GET a /ping/
-fetch("https://crucially-treacherous-madie.ngrok-free.dev/ping/")
-  .then(response => {
-    if (!response.ok) throw new Error("Error en la respuesta del servidor");
-    return response.json();
-  })
-  .then(data => console.log("✅ Respuesta del backend:", data))
-  .catch(error => console.error("❌ Error al hacer ping:", error));
+  try {
+    const res = await fetch(url, { method: "GET" });
+    const text = await res.text(); // no asumas JSON de una
+    console.log("📦 Respuesta cruda:", text);
+
+    let data;
+    try {
+      data = JSON.parse(text);
+      console.log("✅ JSON parseado:", data);
+    } catch {
+      console.warn("⚠️ No es JSON, texto devuelto:", text);
+    }
+  } catch (err) {
+    console.error("❌ Error en la conexión:", err);
+  }
+})();

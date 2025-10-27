@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DOM cargado");
-
-  const BASE_URL = "https://crucially-treacherous-madie.ngrok-free.dev";
   
 
   const params = new URLSearchParams(window.location.search);
@@ -22,9 +20,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!blogId && articlesContainer) {
       console.log("📰 Cargando lista de artículos...");
 
-      const res = await fetch(`${BASE_URL}/blogs/`);
+      const res = await fetch(`https://18.222.79.144/blogs/`);
       const text = await res.text(); // Capturamos el texto crudo de la respuesta
-      console.log("🧾 Respuesta cruda de /blogs/:", text);
 
       if (!res.ok) throw new Error(`Error HTTP ${res.status}: ${text}`);
 
@@ -58,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log("✅ Artículos renderizados en el DOM");
 
       // Cargar artículos populares
-      const resPopular = await fetch(`${BASE_URL}/blogs/popular/`);
+      const resPopular = await fetch(`https://18.222.79.144/blogs/popular/`);
       const textPopular = await resPopular.text();
       console.log("🧾 Respuesta cruda de /blogs/popular/:", textPopular);
 
@@ -95,9 +92,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 📍 Sección de blogs con sidebar
     // ================================
     if (blogContainer) {
-      const res = await fetch(`${BASE_URL}/blogs/`);
+      const res = await fetch(`https://18.222.79.144/blogs/`);
       const text = await res.text();
-      console.log("🧾 Respuesta cruda de /blogs/:", text);
 
       if (!res.ok) throw new Error(`Error HTTP ${res.status}: ${text}`);
 
