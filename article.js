@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DOM cargado");
 
   const BASE_URL = "https://crucially-treacherous-madie.ngrok-free.dev";
+  
 
   const params = new URLSearchParams(window.location.search);
   const blogId = params.get("id");
