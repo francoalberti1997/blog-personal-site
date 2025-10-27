@@ -20,10 +20,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ================================
     if (!blogId && articlesContainer) {
       console.log("📰 Cargando lista de artículos...");
-      console.log(`🌐 Usando BASE_URL: ${BASE_URL}/blogs/`);
+
       const res = await fetch(`${BASE_URL}/blogs/`);
-      if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
-      const articles = await res.json();
+      const text = await res.text(); // Capturamos el texto crudo de la respuesta
+      console.log("🧾 Respuesta cruda de /blogs/:", text);
+
+      if (!res.ok) throw new Error(`Error HTTP ${res.status}: ${text}`);
+
+      let articles;
+      try {
+        articles = JSON.parse(text);
+      } catch (jsonErr) {
+        throw new Error(`Error parseando JSON: ${jsonErr.message}`);
+      }
 
       articlesContainer.innerHTML = "";
 
@@ -49,8 +58,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Cargar artículos populares
       const resPopular = await fetch(`${BASE_URL}/blogs/popular/`);
-      if (!resPopular.ok) throw new Error(`Error HTTP ${resPopular.status}`);
-      const featured = await resPopular.json();
+      const textPopular = await resPopular.text();
+      console.log("🧾 Respuesta cruda de /blogs/popular/:", textPopular);
+
+      if (!resPopular.ok) throw new Error(`Error HTTP ${resPopular.status}: ${textPopular}`);
+
+      let featured;
+      try {
+        featured = JSON.parse(textPopular);
+      } catch (jsonErr) {
+        throw new Error(`Error parseando JSON de populares: ${jsonErr.message}`);
+      }
 
       const list = document.getElementById("featured-list");
       if (list) {
@@ -77,8 +95,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ================================
     if (blogContainer) {
       const res = await fetch(`${BASE_URL}/blogs/`);
-      if (!res.ok) throw new Error("Error al obtener blogs");
-      const blogs = await res.json();
+      const text = await res.text();
+      console.log("🧾 Respuesta cruda de /blogs/:", text);
+
+      if (!res.ok) throw new Error(`Error HTTP ${res.status}: ${text}`);
+
+      let blogs;
+      try {
+        blogs = JSON.parse(text);
+      } catch (jsonErr) {
+        throw new Error(`Error parseando JSON de blogs: ${jsonErr.message}`);
+      }
 
       blogContainer.innerHTML = "";
 
@@ -136,7 +163,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="col-12 text-center my-5">
         <div class="alert alert-danger" role="alert">
           ⚠️ Ocurrió un error al cargar los datos.  
-          <br>Por favor, recargá la página o intentá más tarde.
+          <br>Verificá la consola para más detalles.
         </div>
       </div>
     `;
