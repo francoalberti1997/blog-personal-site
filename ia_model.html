@@ -122,16 +122,16 @@
     <button type="submit" class="btn btn-primary mt-2">Process image</button>
   </form>
 
-  <div class="mt-5 text-center">
-    <h6>Input image</h6>
-    <img id="input-preview" class="preview" style="display:none;">
+    <h5>Imagen original</h5>
+  <img id="input-preview" style="max-width:100%; display:none;">
 
-    <h6 class="mt-4">Results:</h6>
-<img id="output-image" class="preview" style="display:none;">
-<p id="output-url" class="mt-2 text-secondary small" style="display:none;"></p>
+  <h5 class="mt-3">Máscara UNet</h5>
+  <img id="mask-preview" style="max-width:100%; display:none;">
+
+  <h5 class="mt-3">Resultado YOLO</h5>
+  <img id="output-image" style="max-width:100%; display:none;">
 
     
-  </div>
 </div>
 
 <!-- ========================
@@ -156,156 +156,140 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-document.addEventListener("DOMContentLoaded", async () => {
-  const params = new URLSearchParams(window.location.search);
-  const modelId = params.get("id");
-  const API_BASE = "https://18.222.79.144/";
+document.addEventListener("DOMContentLoaded", () => {
 
-  // --- 1. Cargar datos del modelo ---
-  try {
-    const res = await fetch(`${API_BASE}/modelos/${modelId}/`);
-    if (!res.ok) throw new Error("Error al obtener los datos del modelo");
-    const model = await res.json();
+  const API_BASE = "http://127.0.0.1:8000";
 
-    document.getElementById("model-title").textContent = model.title;
-    document.getElementById("model-description").textContent = model.description || "";
-    document.getElementById("model-instructions").textContent = model.instructions || "Sin instrucciones.";
-  } catch (err) {
-    console.error("⚠️ Error cargando modelo:", err);
-    document.getElementById("model-title").textContent = "Error al cargar el modelo.";
-  }
-
-  // --- 2. Referencias ---
   const form = document.getElementById("image-form");
   const input = document.getElementById("image-input");
   const inputPreview = document.getElementById("input-preview");
+  const maskPreview = document.getElementById("mask-preview");
   const outputImage = document.getElementById("output-image");
+  const button = form.querySelector("button");
 
-  // --- 3. Función para redimensionar imagen ---
-  async function resizeImage(file, maxSize = 1024) {
-    return new Promise((resolve) => {
+  /* ================================
+     Resize imagen
+  ================================= */
+  function resizeImage(file, maxSize = 1024) {
+    return new Promise(resolve => {
       const img = new Image();
       const reader = new FileReader();
-
-      reader.onload = e => {
-        img.src = e.target.result;
-      };
+      reader.onload = e => img.src = e.target.result;
+      reader.readAsDataURL(file);
 
       img.onload = () => {
+        const scale = Math.min(
+          maxSize / img.width,
+          maxSize / img.height,
+          1
+        );
         const canvas = document.createElement("canvas");
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height && width > maxSize) {
-          height = Math.round((height * maxSize) / width);
-          width = maxSize;
-        } else if (height > width && height > maxSize) {
-          width = Math.round((width * maxSize) / height);
-          height = maxSize;
-        } else if (width > maxSize) { // imagen cuadrada grande
-          width = height = maxSize;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
-        canvas.toBlob(blob => resolve(blob), file.type, 0.9);
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(b => resolve(b), file.type, 0.9);
       };
-
-      reader.readAsDataURL(file);
     });
   }
 
-  // --- 4. Previsualización ---
+  /* ================================
+     Preview input
+  ================================= */
   input.addEventListener("change", async () => {
     const file = input.files[0];
     if (!file) return;
 
-    // redimensionar para preview
-    const resizedBlob = await resizeImage(file, 1024);
-    const previewURL = URL.createObjectURL(resizedBlob);
-    inputPreview.src = previewURL;
+    const resized = await resizeImage(file);
+    input._resizedFile = resized;
+
+    inputPreview.src = URL.createObjectURL(resized);
     inputPreview.style.display = "block";
 
-    // guardar el blob redimensionado para envío
-    input._resizedFile = resizedBlob;
+    maskPreview.style.display = "none";
+    outputImage.style.display = "none";
   });
 
-  // --- 5. Envío del formulario ---
+  /* ================================
+     Polling + YOLO
+  ================================= */
+  async function pollEstado(prediccionId) {
+    const pollInterval = 5000;
+    let yoloLanzado = false;
+
+    while (true) {
+      const res = await fetch(
+        `${API_BASE}/modelos/predicciones/${prediccionId}/`
+      );
+      const data = await res.json();
+      console.log("Estado:", data);
+
+      /* ===== UNet terminado ===== */
+      if (data.status === "segmented" && data.output_image && !yoloLanzado) {
+        maskPreview.src = API_BASE + data.output_image;
+        maskPreview.style.display = "block";
+
+        yoloLanzado = true;
+
+        await fetch(`${API_BASE}/modelos/yolo-predict/2/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prediccion_id: prediccionId
+          })
+        });
+      }
+
+      /* ===== YOLO terminado ===== */
+      if (data.status === "completed" && data.output_image) {
+        outputImage.src = API_BASE + data.output_image;
+        outputImage.style.display = "block";
+        return;
+      }
+
+      if (data.status === "error") {
+        throw new Error("Error backend");
+      }
+
+      await new Promise(r => setTimeout(r, pollInterval));
+    }
+  }
+
+  /* ================================
+     Submit
+  ================================= */
   form.addEventListener("submit", async e => {
     e.preventDefault();
+
     const file = input._resizedFile || input.files[0];
-    if (!file) return alert("Seleccioná una imagen primero.");
+    if (!file) return alert("Seleccione imagen");
 
     const formData = new FormData();
     formData.append("image", file);
 
-    const button = form.querySelector("button");
     button.disabled = true;
     button.textContent = "Procesando...";
-    outputImage.style.display = "none";
 
     try {
-      // Paso 1: enviar imagen al modelo
-      const res = await fetch(`${API_BASE}/modelos/predict/${modelId}/`, {
-        method: "POST",
-        body: formData
-      });
-      if (!res.ok) throw new Error("Error enviando la imagen");
+      const res = await fetch(
+        `${API_BASE}/modelos/segmentation-predict/3/`,
+        { method: "POST", body: formData }
+      );
 
-      const data = await res.json();
-      const prediccionId = data.prediccion_id;
-      if (!prediccionId) throw new Error("El servidor no devolvió un ID de predicción");
-
-      // Paso 2: polling
-      let completado = false;
-      let intentos = 0;
-      const pollInterval = 3000;
-      const maxIntentos = 1200;
-
-      while (!completado && intentos < maxIntentos) {
-        const statusRes = await fetch(`${API_BASE}/modelos/predicciones/${prediccionId}/`);
-        if (!statusRes.ok) throw new Error("Error consultando el estado");
-
-        const statusData = await statusRes.json();
-        console.log("Estado de la predicción:", statusData);
-
-        if (statusData.status === "done" && statusData.output_image) {
-          outputImage.src = statusData.output_image;
-          outputImage.style.display = "block";
-          completado = true;
-          button.textContent = "Procesar imagen";
-          button.disabled = false;
-          break;
-        }
-
-        if (statusData.status === "error") {
-          alert("❌ Ocurrió un error procesando la imagen.");
-          button.textContent = "Procesar imagen";
-          button.disabled = false;
-          return;
-        }
-
-        await new Promise(r => setTimeout(r, pollInterval));
-        intentos++;
-      }
-
-      if (!completado) {
-        alert("⚠️ Tiempo de espera agotado (1 hora).");
-        button.textContent = "Procesar imagen";
-        button.disabled = false;
-      }
+      const { prediccion_id } = await res.json();
+      await pollEstado(prediccion_id);
 
     } catch (err) {
-      console.error("⚠️ Error general:", err);
-      alert("Error procesando la imagen.");
+      console.error(err);
+      alert("Error");
+    } finally {
       button.disabled = false;
-      button.textContent = "Procesar imagen";
+      button.textContent = "Procesar";
     }
   });
+
 });
 </script>
+
 
 
 </body>

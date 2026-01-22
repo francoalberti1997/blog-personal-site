@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const container = document.querySelector(".row");
 
   try {
-    const res = await fetch("https://18.222.79.144/modelos/");
+    const res = await fetch("http://127.0.0.1:8000/modelos/");
     if (!res.ok) throw new Error("Error al obtener los modelos");
 
     const modelos = await res.json();

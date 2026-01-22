@@ -1,5 +1,5 @@
 (async () => {
-  const url = "https://18.222.79.144/ping/";
+  const url = "http://127.0.0.1:8000/ping/";
   console.log("🌐 Haciendo ping a:", url);
 
   try {

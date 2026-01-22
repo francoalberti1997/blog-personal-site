@@ -1,2 +1,2 @@
-const SERVER_URL = "https://18.222.79.144/";
+const SERVER_URL = "http://127.0.0.1:8000/";
 export default SERVER_URL;
