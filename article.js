@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!blogId && articlesContainer) {
       console.log("📰 Cargando lista de artículos...");
 
-      const res = await fetch(`http://127.0.0.1:8000/blogs/`);
+      const res = await fetch(`https://blog-alberti.onrender.com/blogs/`);
       const text = await res.text(); // Capturamos el texto crudo de la respuesta
 
       if (!res.ok) throw new Error(`Error HTTP ${res.status}: ${text}`);
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log("✅ Artículos renderizados en el DOM");
 
       // Cargar artículos populares
-      const resPopular = await fetch(`http://127.0.0.1:8000/blogs/popular/`);
+      const resPopular = await fetch(`https://blog-alberti.onrender.com/blogs/popular/`);
       const textPopular = await resPopular.text();
       console.log("🧾 Respuesta cruda de /blogs/popular/:", textPopular);
 
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 📍 Sección de blogs con sidebar
     // ================================
     if (blogContainer) {
-      const res = await fetch(`http://127.0.0.1:8000/blogs/`);
+      const res = await fetch(`https://blog-alberti.onrender.com/blogs/`);
       const text = await res.text();
 
       if (!res.ok) throw new Error(`Error HTTP ${res.status}: ${text}`);

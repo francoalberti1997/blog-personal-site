@@ -30,9 +30,6 @@
 			<a class="nav-link" href="./index.html">Intro <span class="sr-only">(current)</span></a>
 			</li>
 			<li class="nav-item">
-			<a class="nav-link" href="./modelos.html">Projects</a>
-			</li>			
-			<li class="nav-item">
 			<a class="nav-link" href="./blogs.html">Blogs</a>
 			</li>
 		</ul>
@@ -100,7 +97,7 @@ a p{
       </div>
     </div> -->
 
-     <div class="col-md-12 col-lg-8 mx-auto my-4">
+     <div class="col-md-12 col-lg-12 mx-auto my-4">
       <article class="article-post" id="article-content"></article>
 
       <!-- <div class="border p-5 bg-lightblue mt-5">
@@ -126,7 +123,8 @@ a p{
 </div>
 
 <!-- READ NEXT -->
-<div class="container pt-4 pb-4" id="read-next-section"></div>
+<div class="container pt-4 pb-4" id="video-yt"></div>
+
 
 <!-- FOOTER -->
 <div class="container mt-5">
@@ -156,6 +154,8 @@ a p{
 <!-- SCRIPT EXTERNO -->
 <script>
 
+  
+
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DOM cargado en article.html");
 
@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const url = `http://127.0.0.1:8000/blogs/${blogId}/`;
+  const url = `https://blog-alberti.onrender.com/blogs/${blogId}/`;
   console.log("🌐 Solicitando:", url);
 
   try {
@@ -181,6 +181,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // --- Actualizar contenido dinámicamente ---
     document.title = article.title;
+
+const videoContainer = document.getElementById("video-yt");
+
+const youtubeId = article.youtube_id; // esto después viene del backend
+
+if (youtubeId) {
+  videoContainer.innerHTML = `
+    <div class="yt-video">
+        <div class="ratio ratio-16x9 shadow rounded overflow-hidden">
+          <iframe
+            src="https://www.youtube.com/embed/${youtubeId}"
+            title="YouTube video"
+            loading="lazy"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+      </div>
+    </div>
+  `;
+}
     document.getElementById("page-title").textContent = article.title;
 
     const header = document.getElementById("article-header");
@@ -195,11 +216,11 @@ document.addEventListener("DOMContentLoaded", async () => {
               <h1 class="display-4 secondfont mb-3 font-weight-bold">${article.title}</h1>
               <p class="mb-5">${article.description || ""}</p>
               <div class="d-flex align-items-center">
-                <img class="rounded-circle" src=${article.author_image} width="70">
-                <small class="ml-2">
+                <img class="rounded-circle" src=${article.author_image} width="100">
+                <h5 class="ml-4">
                   ${article.author}
                   <span class="text-muted d-block">${article.date} · ${article.read_time}</span>
-                </small>
+                </h5>
               </div>
             </div>
             <div class="col-md-6 pr-0">

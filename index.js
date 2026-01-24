@@ -1,5 +1,5 @@
 (async () => {
-  const url = "http://127.0.0.1:8000/ping/";
+  const url = "https://blog-alberti.onrender.com/ping/";
   console.log("🌐 Haciendo ping a:", url);
 
   try {
