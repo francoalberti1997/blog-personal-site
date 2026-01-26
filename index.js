@@ -1,5 +1,5 @@
 (async () => {
-  const url = "https://blog-alberti.onrender.com/ping/";
+  const url = "https://francoalberti97.pythonanywhere.com/ping/";
   console.log("🌐 Haciendo ping a:", url);
 
   try {

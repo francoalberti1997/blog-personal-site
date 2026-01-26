@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const container = document.querySelector(".row");
 
   try {
-    const res = await fetch("https://blog-alberti.onrender.com/modelos/");
+    const res = await fetch("https://francoalberti97.pythonanywhere.com/modelos/");
     if (!res.ok) throw new Error("Error al obtener los modelos");
 
     const modelos = await res.json();

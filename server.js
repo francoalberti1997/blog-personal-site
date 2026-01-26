@@ -1,2 +1,2 @@
-const SERVER_URL = "https://blog-alberti.onrender.com/";
+const SERVER_URL = "https://francoalberti97.pythonanywhere.com/";
 export default SERVER_URL;
